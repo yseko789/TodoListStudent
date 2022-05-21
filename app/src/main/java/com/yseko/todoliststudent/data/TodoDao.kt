@@ -5,11 +5,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TodoDao {
-    @Query("SELECT title, date from todo WHERE category = :category ORDER BY date ASC")
-    fun getTodoByCategory(category: String): Flow<List<Todo>>
+//    @Query("SELECT title, date from todo WHERE category = :category ORDER BY date ASC")
+//    fun getTodoByCategory(category: String): Flow<List<Todo>>
+//
+//    @Query("SELECT title, date from todo WHERE id = :id")
+//    fun getTodoById(id: Int): Flow<Todo>
 
-    @Query("SELECT title, date from todo WHERE id = :id")
-    fun getTodoById(id: Int): Flow<Todo>
+    @Query("SELECT * from todo ORDER BY date ASC")
+    fun getTodoAll(): Flow<List<Todo>>
 
     @Insert
     suspend fun insert(todo: Todo)

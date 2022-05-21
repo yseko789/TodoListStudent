@@ -5,12 +5,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.yseko.todoliststudent.data.Todo
 import com.yseko.todoliststudent.databinding.FragmentListBinding
 
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
-    private val binding get() = _binding
+    private val binding get() = _binding!!
+
+    private val viewModel: TodoViewModel by activityViewModels{
+        TodoViewModelFactory(
+            (activity?.application as TodoApplication).database.todoDao()
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,5 +34,24 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val adapter = TodoAdapter{
+            val action = ListFragmentDirections.actionListFragmentToEditFragment(it.id)
+            this.findNavController().navigate(action)
+        }
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
+        binding.recyclerView.adapter = adapter
+
+        // attach observer here to all the todo
+        viewModel.allItems.observe(this.viewLifecycleOwner) { todos ->
+            todos.let{
+                adapter.submitList(it)
+            }
+        }
+
+        binding.floatingButton.setOnClickListener{
+            val action = ListFragmentDirections.actionListFragmentToAddFragment()
+            this.findNavController().navigate(action)
+        }
     }
 }

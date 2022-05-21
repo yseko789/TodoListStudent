@@ -1,6 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listFragment">
 
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.yseko.todoliststudent.ListFragment"
+        android:label="fragment_list"
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_listFragment_to_editFragment"
+            app:destination="@id/editFragment" />
+        <action
+            android:id="@+id/action_listFragment_to_addFragment"
+            app:destination="@id/addFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addFragment"
+        android:name="com.yseko.todoliststudent.AddFragment"
+        android:label="@string/add_fragment_title"
+        tools:layout="@layout/fragment_add">
+        <action
+            android:id="@+id/action_addFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editFragment"
+        android:name="com.yseko.todoliststudent.EditFragment"
+        android:label="@string/edit_fragment_title"
+        tools:layout="@layout/fragment_edit">
+        <argument
+            android:name="todo_id"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_editFragment_to_listFragment"
+            app:destination="@id/listFragment" />
+    </fragment>
 </navigation>
