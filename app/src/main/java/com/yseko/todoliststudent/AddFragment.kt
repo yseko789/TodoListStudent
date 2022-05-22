@@ -8,15 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.navArgs
 import androidx.navigation.fragment.findNavController
 import com.yseko.todoliststudent.data.Todo
 import com.yseko.todoliststudent.databinding.FragmentAddBinding
 
 
 class AddFragment : Fragment() {
+
+    private val navigationArgs: AddFragmentArgs by navArgs()
+
+
     private var _binding: FragmentAddBinding? = null
     private val binding get() = _binding!!
     lateinit var todo: Todo
+
+
+
+
 
     private val viewModel: TodoViewModel by activityViewModels{
         TodoViewModelFactory(
@@ -35,9 +44,26 @@ class AddFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if(navigationArgs.todoId == -1) {
+            binding.addBtn.setOnClickListener {
+                addNewTodo()
+            }
+        }
+        else{
+            viewModel.getTodo(navigationArgs.todoId).observe(this.viewLifecycleOwner) { selectedTodo ->
+                todo = selectedTodo
 
-        binding.addBtn.setOnClickListener{
-            addNewTodo()
+                binding.apply {
+                    titleInput.setText(todo.todoTitle)
+                    dateInput.setText(todo.todoDate)
+                    categoryInput.setText(todo.todoCategory)
+
+                    addBtn.text = "Complete"
+                    addBtn.setOnClickListener {
+                        editTodo()
+                    }
+                }
+            }
         }
     }
 
@@ -51,7 +77,7 @@ class AddFragment : Fragment() {
 
     private fun addNewTodo(){
         if(isInputValid()){
-            viewModel.addItem(
+            viewModel.addTodo(
                 binding.titleInput.text.toString(),
                 binding.dateInput.text.toString(),
                 binding.categoryInput.text.toString()
@@ -67,6 +93,19 @@ class AddFragment : Fragment() {
             binding.dateInput.text.toString(),
             binding.categoryInput.text.toString()
         )
+    }
+
+    private fun editTodo(){
+        if(isInputValid()){
+            viewModel.editTodo(
+                navigationArgs.todoId,
+                binding.titleInput.text.toString(),
+                binding.dateInput.text.toString(),
+                binding.categoryInput.text.toString()
+            )
+            val action = AddFragmentDirections.actionAddFragmentToListFragment()
+            findNavController().navigate(action)
+        }
     }
 
 

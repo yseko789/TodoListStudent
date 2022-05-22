@@ -11,9 +11,6 @@
         android:label="fragment_list"
         tools:layout="@layout/fragment_list" >
         <action
-            android:id="@+id/action_listFragment_to_editFragment"
-            app:destination="@id/editFragment" />
-        <action
             android:id="@+id/action_listFragment_to_addFragment"
             app:destination="@id/addFragment" />
     </fragment>
@@ -25,17 +22,9 @@
         <action
             android:id="@+id/action_addFragment_to_listFragment"
             app:destination="@id/listFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/editFragment"
-        android:name="com.yseko.todoliststudent.EditFragment"
-        android:label="@string/edit_fragment_title"
-        tools:layout="@layout/fragment_edit">
         <argument
             android:name="todo_id"
-            app:argType="integer" />
-        <action
-            android:id="@+id/action_editFragment_to_listFragment"
-            app:destination="@id/listFragment" />
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 </navigation>
