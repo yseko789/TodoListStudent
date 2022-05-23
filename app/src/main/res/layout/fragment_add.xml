@@ -44,30 +44,21 @@
                 android:singleLine="true" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/category_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="@string/todo_category_hint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date_label">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/category_input"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textAutoComplete|textCapWords"
-                android:singleLine="true" />
-        </com.google.android.material.textfield.TextInputLayout>
+       <Spinner
+           android:id="@+id/category_input"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintTop_toBottomOf="@id/date_label"
+           android:spinnerMode="dropdown"/>
 
         <Button
             android:id="@+id/addBtn"
             android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/category_label" />
+            app:layout_constraintTop_toBottomOf="@+id/category_input" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

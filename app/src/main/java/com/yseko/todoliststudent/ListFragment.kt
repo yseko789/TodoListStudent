@@ -35,7 +35,7 @@ class ListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val adapter = TodoAdapter{
-            val action = ListFragmentDirections.actionListFragmentToAddFragment(it.id)
+            val action = ListFragmentDirections.actionListFragmentToAddFragment(it.todoId)
             this.findNavController().navigate(action)
         }
 

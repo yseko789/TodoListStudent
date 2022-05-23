@@ -7,6 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.SpinnerAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.fragment.findNavController
@@ -22,16 +26,15 @@ class AddFragment : Fragment() {
     private var _binding: FragmentAddBinding? = null
     private val binding get() = _binding!!
     lateinit var todo: Todo
-
-
-
-
-
+    lateinit var selectedCategory: String
+    var selectedCategoryPos: Int = 0
     private val viewModel: TodoViewModel by activityViewModels{
         TodoViewModelFactory(
             (activity?.application as TodoApplication).database.todoDao()
         )
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +47,30 @@ class AddFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val spinner: Spinner = binding.categoryInput
+        if(spinner!=null){
+            viewModel.allCategories.observe(this.viewLifecycleOwner){categories->
+                spinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+            }
+            spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    selectedCategory = spinner.getItemAtPosition(position) as String
+                    selectedCategoryPos = position
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+            }
+        }
+
+
         if(navigationArgs.todoId == -1) {
             binding.addBtn.setOnClickListener {
                 addNewTodo()
@@ -56,7 +83,10 @@ class AddFragment : Fragment() {
                 binding.apply {
                     titleInput.setText(todo.todoTitle)
                     dateInput.setText(todo.todoDate)
-                    categoryInput.setText(todo.todoCategory)
+
+                    //--might need to change
+                    categoryInput.setSelection(selectedCategoryPos)
+                    //----
 
                     addBtn.text = "Complete"
                     addBtn.setOnClickListener {
@@ -80,7 +110,7 @@ class AddFragment : Fragment() {
             viewModel.addTodo(
                 binding.titleInput.text.toString(),
                 binding.dateInput.text.toString(),
-                binding.categoryInput.text.toString()
+                selectedCategory
             )
             val action = AddFragmentDirections.actionAddFragmentToListFragment()
             findNavController().navigate(action)
@@ -90,8 +120,7 @@ class AddFragment : Fragment() {
     private fun isInputValid():Boolean{
         return viewModel.isInputValid(
             binding.titleInput.text.toString(),
-            binding.dateInput.text.toString(),
-            binding.categoryInput.text.toString()
+            binding.dateInput.text.toString()
         )
     }
 
@@ -101,12 +130,14 @@ class AddFragment : Fragment() {
                 navigationArgs.todoId,
                 binding.titleInput.text.toString(),
                 binding.dateInput.text.toString(),
-                binding.categoryInput.text.toString()
+                selectedCategory
             )
             val action = AddFragmentDirections.actionAddFragmentToListFragment()
             findNavController().navigate(action)
         }
     }
+
+
 
 
 }
