@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/listFragment"
         android:name="com.yseko.todoliststudent.ListFragment"
-        android:label="fragment_list"
-        tools:layout="@layout/fragment_list" >
+        android:label="@string/list_fragment_title"
+        tools:layout="@layout/fragment_list">
         <action
             android:id="@+id/action_listFragment_to_addFragment"
             app:destination="@id/addFragment" />
@@ -17,14 +17,17 @@
     <fragment
         android:id="@+id/addFragment"
         android:name="com.yseko.todoliststudent.AddFragment"
-        android:label="@string/add_fragment_title"
+        android:label="{fragment_title}"
         tools:layout="@layout/fragment_add">
         <action
             android:id="@+id/action_addFragment_to_listFragment"
             app:destination="@id/listFragment" />
         <argument
             android:name="todo_id"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="fragment_title"
+            app:argType="string" />
     </fragment>
 </navigation>

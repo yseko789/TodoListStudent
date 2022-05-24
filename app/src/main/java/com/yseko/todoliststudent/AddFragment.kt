@@ -1,5 +1,6 @@
 package com.yseko.todoliststudent
 
+import android.app.DatePickerDialog
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,15 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.SpinnerAdapter
+import android.widget.*
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.fragment.findNavController
 import com.yseko.todoliststudent.data.Todo
 import com.yseko.todoliststudent.databinding.FragmentAddBinding
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class AddFragment : Fragment() {
@@ -34,6 +34,7 @@ class AddFragment : Fragment() {
         )
     }
 
+    val cal = Calendar.getInstance()
 
 
     override fun onCreateView(
@@ -48,27 +49,59 @@ class AddFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val spinner: Spinner = binding.categoryInput
-        if(spinner!=null){
-            viewModel.allCategories.observe(this.viewLifecycleOwner){categories->
-                spinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-            }
-            spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    selectedCategory = spinner.getItemAtPosition(position) as String
-                    selectedCategoryPos = position
-                }
+//        val datePicker = binding.dateInput
+//        val today = Calendar.getInstance()
+//        datePicker.init(today.get(Calendar.YEAR), today.get(Calendar.MONTH),
+//            today.get(Calendar.DAY_OF_MONTH)
+//
+//        ) { view, year, month, day ->
+//            val month = month + 1
+//            val msg = "You Selected: $day/$month/$year"
+//            Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
+//        }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    TODO("Not yet implemented")
-                }
+        val dateButton = binding.showDate
+        val dateSetListener =
+            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+                cal.set(Calendar.YEAR, year)
+                cal.set(Calendar.MONTH, monthOfYear)
+                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+                updateDateInView()
+            }
+
+        dateButton.setOnClickListener {
+            DatePickerDialog(
+                requireContext(),
+                dateSetListener,
+                // set DatePickerDialog to point to today's date when it loads up
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
+
+
+        val spinner: Spinner = binding.categoryInput
+
+        viewModel.allCategories.observe(this.viewLifecycleOwner){categories->
+            spinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, categories)
+        }
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                selectedCategory = spinner.getItemAtPosition(position) as String
+                selectedCategoryPos = position
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
             }
         }
+
 
 
         if(navigationArgs.todoId == -1) {
@@ -82,7 +115,7 @@ class AddFragment : Fragment() {
 
                 binding.apply {
                     titleInput.setText(todo.todoTitle)
-                    dateInput.setText(todo.todoDate)
+                    dateInput.text = todo.todoDate
 
                     //--might need to change
                     categoryInput.setSelection(selectedCategoryPos)
@@ -135,6 +168,12 @@ class AddFragment : Fragment() {
             val action = AddFragmentDirections.actionAddFragmentToListFragment()
             findNavController().navigate(action)
         }
+    }
+
+    private fun updateDateInView() {
+        val myFormat = "MM/dd/yyyy" // mention the format you need
+        val sdf = SimpleDateFormat(myFormat, Locale.US)
+        binding.dateInput.text = sdf.format(cal.time)
     }
 
 

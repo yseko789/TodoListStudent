@@ -34,10 +34,15 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = TodoAdapter{
-            val action = ListFragmentDirections.actionListFragmentToAddFragment(it.todoId)
+        val adapter = TodoAdapter(
+            {
+            val action = ListFragmentDirections.actionListFragmentToAddFragment(getString(R.string.edit_fragment_title),it.todoId)
             this.findNavController().navigate(action)
-        }
+            },
+            {
+                viewModel.removeTodo(it.todoId, it.todoTitle, it.todoDate,it.todoCategory)
+            }
+        )
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
         binding.recyclerView.adapter = adapter
@@ -50,7 +55,7 @@ class ListFragment : Fragment() {
         }
 
         binding.floatingButton.setOnClickListener{
-            val action = ListFragmentDirections.actionListFragmentToAddFragment()
+            val action = ListFragmentDirections.actionListFragmentToAddFragment(getString(R.string.add_fragment_title))
             this.findNavController().navigate(action)
         }
     }
