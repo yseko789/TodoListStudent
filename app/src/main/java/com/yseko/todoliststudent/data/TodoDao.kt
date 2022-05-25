@@ -14,6 +14,10 @@ interface TodoDao {
     @Query("SELECT * from todo WHERE todoId = :id")
     fun getTodoById(id: Int): Flow<Todo>
 
+
+    @Query("SELECT * from todo WHERE category = :category")
+    fun getByCategory(category: String):Flow<List<Todo>>
+
     @Query("SELECT * from todo ORDER BY date ASC")
     fun getTodoAll(): Flow<List<Todo>>
 
@@ -25,4 +29,7 @@ interface TodoDao {
 
     @Delete
     suspend fun delete(todo: Todo)
+
+    @Insert
+    suspend fun insert(category:Category)
 }

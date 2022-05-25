@@ -5,10 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yseko.todoliststudent.data.Todo
 import com.yseko.todoliststudent.databinding.FragmentListBinding
 
 
@@ -21,6 +24,8 @@ class ListFragment : Fragment() {
             (activity?.application as TodoApplication).database.todoDao()
         )
     }
+
+    private val navigationArgs: ListFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,9 +53,18 @@ class ListFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
         // attach observer here to all the todo
-        viewModel.allItems.observe(this.viewLifecycleOwner) { todos ->
-            todos.let{
-                adapter.submitList(it)
+
+        if(navigationArgs.filter == "All") {
+            viewModel.allItems.observe(this.viewLifecycleOwner) { todos ->
+                todos.let {
+                    adapter.submitList(it)
+                }
+            }
+        }else{
+            viewModel.getByCategory(navigationArgs.filter).observe(this.viewLifecycleOwner){todos->
+                todos.let{
+                    adapter.submitList(it)
+                }
             }
         }
 
@@ -58,5 +72,44 @@ class ListFragment : Fragment() {
             val action = ListFragmentDirections.actionListFragmentToAddFragment(getString(R.string.add_fragment_title))
             this.findNavController().navigate(action)
         }
+
+        binding.resetBtn.setOnClickListener{
+            val action = ListFragmentDirections.actionListFragmentSelf()
+            this.findNavController().navigate(action)
+        }
+
+
+        val spinner: Spinner = binding.filter
+
+        viewModel.allCategories.observe(this.viewLifecycleOwner){categories->
+            val list = categories.toMutableList()
+            list.add(0,"All")
+            spinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, list)
+        }
+
+        spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+            var count = 0
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                if(count >=1) {
+
+                    val action = ListFragmentDirections.actionListFragmentSelf(
+                        spinner.getItemAtPosition(position).toString(), position
+                    )
+                    findNavController().navigate(action)
+                }
+                count++
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+        }
+
+
     }
 }

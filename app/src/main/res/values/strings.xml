@@ -23,4 +23,6 @@
     <string name = "instructions_title">Enter Title:</string>
     <string name = "instructions_date">Enter Date:</string>
     <string name = "instructions_category">Pick a Category:</string>
+
+    <string name = "resetBtn">R</string>
 </resources>

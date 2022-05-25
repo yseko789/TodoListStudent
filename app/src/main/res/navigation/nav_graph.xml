@@ -13,6 +13,17 @@
         <action
             android:id="@+id/action_listFragment_to_addFragment"
             app:destination="@id/addFragment" />
+        <action
+            android:id="@+id/action_listFragment_self"
+            app:destination="@id/listFragment" />
+        <argument
+            android:name="filter"
+            app:argType="string"
+            android:defaultValue="All" />
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"

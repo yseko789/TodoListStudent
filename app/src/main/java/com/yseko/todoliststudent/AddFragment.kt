@@ -1,12 +1,16 @@
 package com.yseko.todoliststudent
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.DialogInterface
 import android.os.Bundle
+import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.activityViewModels
@@ -86,6 +90,7 @@ class AddFragment : Fragment() {
         viewModel.allCategories.observe(this.viewLifecycleOwner){categories->
             spinner.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, categories)
         }
+        spinner.setSelection(0)
         spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -95,6 +100,7 @@ class AddFragment : Fragment() {
             ) {
                 selectedCategory = spinner.getItemAtPosition(position) as String
                 selectedCategoryPos = position
+
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -102,7 +108,9 @@ class AddFragment : Fragment() {
             }
         }
 
-
+        binding.addNewCategory.setOnClickListener{
+            showDialog()
+        }
 
         if(navigationArgs.todoId == -1) {
             binding.addBtn.setOnClickListener {
@@ -148,6 +156,24 @@ class AddFragment : Fragment() {
             val action = AddFragmentDirections.actionAddFragmentToListFragment()
             findNavController().navigate(action)
         }
+    }
+
+    private fun showDialog(){
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Enter new category")
+
+        val input = EditText(requireContext())
+        input.hint = "New category..."
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        builder.setView(input)
+
+        builder.setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+            viewModel.addCategory(input.text.toString())
+        })
+        builder.setNegativeButton("Cancel", DialogInterface.OnClickListener{dialog, which ->
+            dialog.cancel()
+        })
+        builder.show()
     }
 
     private fun isInputValid():Boolean{
